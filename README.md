@@ -36,6 +36,7 @@ npm run lint
 ## Steps
 1. 用 npm init vue@latest 架構 vue-guanglun
 2. add Listening.vue, and use it in App.vue
+3. uninstall eslint and prettier
    
 ## 雜項
 [如何禁止chrome自動跳轉https](https://www.796t.com/content/1545632058.html)
