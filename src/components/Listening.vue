@@ -1,4 +1,5 @@
 <template>
+  <Progress v-if="datas.length>0" :listening-data="datas"/>
   <div v-for="d in datas" :key="d.position">
     <p>{{d.position}} {{d.volume}} {{d.startTime}} {{d.endTime}} <button @click="edit(d)">Edit</button></p>
   </div>
@@ -26,6 +27,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
+import Progress from "./Progress.vue";
 const position = ref('');
 const original = ref('');
 const explanation = ref('');

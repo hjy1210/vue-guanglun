@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p><span v-for= "d in listeningData" :key="d.position">{{d.position+" "}} </span></p>
     <a href="https://www.jb51.net/article/103461.htm">https://www.jb51.net/article/103461.htm</a>
     <div class="scroll" id="scroll" ref="scroll">
       <div class="bar" id="bar" @mousedown = "barmousedown" ref="bar">
@@ -12,6 +13,10 @@
 
 <script setup>
     import {ref} from 'vue';
+    const props = defineProps({
+      listeningData: Array
+    });
+
     const txt = ref('');
     const scroll = ref(null);
     const bar = ref(null);
@@ -20,8 +25,8 @@
     function barmousedown(event){
       //var event = event || window.event;
       var leftVal = event.clientX - event.target.offsetLeft;
-      console.log(`event.clientX=${event.clientX},event.target.offsetLeft=${event.target.offsetLeft},leftVal=${leftVal}`);
-      var that = event.target;
+      //console.log(`event.clientX=${event.clientX},event.target.offsetLeft=${event.target.offsetLeft},leftVal=${leftVal}`);
+      //var that = event.target;
       // 拖動一定寫到 down 裡面才可以
       document.onmousemove = function(event){
         //var event = event || window.event;

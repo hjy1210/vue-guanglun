@@ -1,9 +1,8 @@
 <script setup>
+import {ref, reactive} from 'vue'
 import HelloWorld from "./components/HelloWorld.vue";
 import TheWelcome from "./components/TheWelcome.vue";
 import Listening from "./components/Listening.vue";
-import Progress from "./components/Progress.vue";
-
 </script>
 
 <template>
@@ -24,7 +23,7 @@ import Progress from "./components/Progress.vue";
   <main>
     <!--<TheWelcome />-->
     <Listening />
-    <Progress />
+    
   </main>
 </template>
 
