@@ -1,6 +1,9 @@
 <template>
   <div>
+    <button @click="playpause">{{status}}</button>
+    <audio  ref="audio1" @timeupdate="updated"></audio>
     <p><span v-for= "d in listeningData" :key="d.position">{{d.position+" "}} </span></p>
+    <p v-for= "d in volperiods" :key="d.volume">{{d.volume}} {{d.startTime}} {{d.endTime}} {{d.duration}} </p>
     <a href="https://www.jb51.net/article/103461.htm">https://www.jb51.net/article/103461.htm</a>
     <div class="scroll" id="scroll" ref="scroll">
       <div class="bar" id="bar" @mousedown = "barmousedown" ref="bar">
@@ -12,16 +15,21 @@
 </template>
 
 <script setup>
-    import {ref} from 'vue';
+    import {ref, computed} from 'vue';
     const props = defineProps({
       listeningData: Array
     });
-
+    const message = ref('');
     const txt = ref('');
     const scroll = ref(null);
     const bar = ref(null);
     const mask = ref(null);
     const barleft = ref(0);
+    const status = ref('play');
+    const leading = "http://bwglobal.inetfile.org/LR-mp3/001-160/";
+    //const source = ref([]);
+    const audio1 = ref(null)
+    const index = ref(0);
     function barmousedown(event){
       //var event = event || window.event;
       var leftVal = event.clientX - event.target.offsetLeft;
@@ -46,6 +54,81 @@
     }
     document.onmouseup = function(){
       document.onmousemove = null; //弹起鼠标不做任何操作
+    }
+    const volperiods=computed(()=>{
+      var res = [];
+      var vol = "";
+      var current = null;
+      console.log(props.listeningData.length);
+      for (var i=0; i< props.listeningData.length; i++){
+        console.log(props.listeningData[i].volume);
+        if (props.listeningData[i].volume!=vol){
+          current = {volume:props.listeningData[i].volume, startTime:timeinseconds(props.listeningData[i].startTime),
+            endTime:timeinseconds(props.listeningData[i].endTime)};
+          vol = props.listeningData[i].volume;
+          res.push(current);
+        } else {
+          current.endTime=timeinseconds(props.listeningData[i].endTime);
+        }
+      }
+      res.forEach(element => {
+        element.duration = element.endTime-element.startTime;
+        //source.value.push(leading+element.volume+'.mp3');
+      });
+      //res.forEach(e=>{console.log(e.duration)});
+
+      return res;
+    })
+    function updated(){
+      console.log(audio1.value.currentTime)
+      console.log(volperiods.value[index.value].endTime)
+      if (audio1.value.currentTime > volperiods.value[index.value].endTime){
+        audio1.value.pause();
+        console.log(volperiods.value.length);
+        console.log(index.value);
+        if (volperiods.value.length>1 && index.value==0){
+          index.value=1;
+          playindex();
+        }
+      }
+    }
+    function ended(){
+      console.log(audio1.value.currentTime)
+      console.log(volperiods.value[index.value].endTime)
+      console.log(volperiods.value.length);
+      console.log(index.value);
+      if (volperiods.value.length>1 && index.value==0){
+        index.value=1;
+        playindex();
+      }
+    }
+
+    function timeinseconds(timeinminsec){
+      var minsec=timeinminsec.split(':');
+      return parseInt(minsec[0])*60+parseInt(minsec[1]);
+    }
+    function playpause(){
+      if(status.value=='play'){
+        //source1.value = leading+volperiods.value[0].volume+'.mp3';
+        //console.log(source.value[0].value);
+        playindex();
+        //status.value = 'pause'
+      } else {
+        audio1.value.pause();
+        //status.value='play';
+      }
+    }
+    function playindex(){
+        console.log(volperiods.value.length);
+        console.log(index.value);
+        console.log(volperiods.value[index.value].startTime);
+        audio1.value.src = leading+volperiods.value[index.value].volume+'.mp3';
+        audio1.value.currentTime = volperiods.value[index.value].startTime;
+        audio1.value.load();
+        audio1.value.ontimeupdate=updated;
+        audio1.value.onended= ended;
+        audio1.value.play();
+
     }
 </script>
 
