@@ -40,3 +40,9 @@ npm run lint
    
 ## 雜項
 [如何禁止chrome自動跳轉https](https://www.796t.com/content/1545632058.html)
+
+## guanglun.html
+vanilla 資料夾裡面的 guanglun.html，載入相應的txt檔，可以用來聽廣論時時聽。
+例如載入P30L9-P31L8.txt，可以聽廣論課本第30頁第9行到第31頁第8行的音檔。
+
+註:guanglun.html從D3專案遷移過來。
