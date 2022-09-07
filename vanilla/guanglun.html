@@ -6,19 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    span:hover {
-      background-color: yellow;
-      cursor: pointer;
-    }
-
-    span.active:hover {
-      background-color: lightblue;
-      cursor: pointer;
-    }
-
     span.active {
-      background-color: lightblue;
-      cursor: pointer;
+      background-color: lightskyblue;
+    }
+    span.odd {
+      text-decoration: underline;
     }
 
     span.guanglun {
@@ -43,6 +35,8 @@
   <input type="file" id="fileElem" accept=".txt" style="display:none">
   <button id="fileSelect">從本文檔載入音檔資料到下面的文字方塊</button>
   <button id="btnConvert">廣論原文</button>
+  <span id="filename">placdeholder</span>
+
   <textarea id="data" rows="20" cols="60" style="display:block; font-size:1.2em;">
 [
  {
@@ -110,13 +104,17 @@
       curparagraph = null;
       activeSpan = null;
       sourceDiv.innerHTML = "";
-      data.forEach((item) => {
+      data.forEach((item, ind) => {
         if (item.newpar || curparagraph == null) {
           curparagraph = document.createElement("p");
           sourceDiv.appendChild(curparagraph)
         }
         var span = document.createElement("span");
         span.classList.add("guanglun");
+        if (ind%2==1){
+          span.classList.add("odd");
+        }
+
         span.textContent = item.source;
         var src = `https://lamrim.xyz/player2/?&tch=gl1&af1=${item.startvol}&st1=${minsec2sec(item.starttime)}`;
         if (item.endvol && item.endvol != item.startvol) {
@@ -128,6 +126,7 @@
         span.addEventListener("click", (ev) => setYinDang(ev.target));
         curparagraph.appendChild(span)
       })
+      iframe.setAttribute("src", "");
     }
     function minsec2sec(minsec) {
       var tokens = minsec.split(":")
@@ -168,6 +167,7 @@
       ev.preventDefault();
       if (ev.target.files.length>0){
         var file = ev.target.files[0];
+        document.getElementById("filename").innerText = file.name;
         var reader = new FileReader()
         reader.onloadend=(event)=>{
           textareaData.value=event.target.result
