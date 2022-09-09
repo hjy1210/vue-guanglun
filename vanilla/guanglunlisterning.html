@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body, button {
+            font-size: 1.2em;
+            font-family: 標楷體;
+        }
         .active {
             background-color: lightskyblue;
         }
@@ -20,8 +24,8 @@
     <div>
         <input type="file" id="fileElem" accept=".txt" style="display:none" />
         <button id="fileSelect">從本文檔載入音檔資料</button>
-        <button onClick="audio.play()">play</button> <button onClick="audio.pause()">pause</button>
-        <span id="filename">placdeholder</span>
+        <button onClick="audio.play()">播放</button> <button onClick="audio.pause()">暫停</button>
+        <span id="filename"></span>
     </div>
     <div>
         <audio id="audio"></audio>
