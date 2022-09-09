@@ -83,6 +83,7 @@
                 span.setAttribute("vol",  item.startvol.toUpperCase());
                 span.setAttribute("starttime", minsec2sec(item.starttime));
                 span.setAttribute("endtime", minsec2sec(item.endtime));
+                span.setAttribute("title",`${item.startvol.toUpperCase()}:${item.starttime}-${item.endtime}`);
                 span.addEventListener("click", (ev) => setYinDang(index));
                 curparagraph.appendChild(span)
             })
