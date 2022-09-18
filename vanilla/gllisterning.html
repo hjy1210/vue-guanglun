@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>以19a音檔為例</p>
+    <ol>
+        <li>到 <a href="https://lamrim.xyz/player2/">https://lamrim.xyz/player2/</a> 開啟19a音檔，進入開發者工具的console頁面</li>
+        <li>將 extractGuanlun.js 的內容抄入，它會將19a音檔的內容取出，存成指定的檔名gl-19a.txt(19a音檔對應的檔名，由使用者提供)</li>
+        <li>點擊下面的Load file按鈕，製造音檔連結資料檔，取名例如P34L4-P34L10-19a.txt</li>
+    </ol>
+    <div>
+        <input type="file" id="file" style="display:none;">
+        <button id="btnLoadFile">Load file</button>
+    </div>
+    <textarea id="data" style="width:100%;" rows="15"></textarea>
+    <script>
+        let data;
+        let inpFile = document.getElementById('file');
+        let btnLoadFile = document.getElementById('btnLoadFile');
+        btnLoadFile.addEventListener('click', ()=>{inpFile.click()});
+        inpFile.addEventListener('change',()=>{
+            if (inpFile.files.length>0){
+                let file = inpFile.files[0];
+                getData(file);
+            }
+        })
+
+        function getData(file){
+            let filename = file.name;
+            let vol = filename.split('-')[1].split('.')[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                data = parseData(evt.target.result,vol);
+                document.getElementById('data').value = JSON.stringify(data, null, 4);
+                let blob = new Blob([JSON.stringify(data, null, 4)], { type: "text/plain" });
+                let link = document.createElement('a');
+                link.download = "P34L4-p34L10-19a.txt";
+                let url = URL.createObjectURL(blob);
+                link.href= url;
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+            reader.readAsText(file);
+        }
+        function isTimemark(line){
+            return (line.length==7 && line.substr(0,1)=='[' && line.substr(6,1)==']')
+        }
+        function parseData(str,vol){
+            let  lines = str.split('\n');
+            let timemarks = lines.map(x=>isTimemark(x));
+            let needKeeps = lines.map((x)=>true);
+            for (let i=0;i<lines.length;i++) {
+                if (i>0 && lines[i]=='' && timemarks[i-1]) //timenark後面有個時鐘
+                    needKeeps[i] = false;
+            }
+            if (lines[lines.length-1]=='')
+            needKeeps[lines.length-1] = false;  // 最後一個timemark後有兩個空白行
+            lines = lines.filter((x,i)=>needKeeps[i])
+            
+            for (let i=0;i<lines.length;i++){
+                if (lines[i]=='')
+                    lines[i] = '*';              //用*代表解釋文
+            }
+            let res=[];
+            let start = false;
+            let curObj;
+            let curTimeInSeconds;
+            for (let i=0;i<lines.length;i++){
+                if (isTimemark(lines[i])){
+                    if (start==false) {
+                        curObj={};
+                        curObj.startvol=vol;
+                        curObj.starttime=lines[i].substr(1,5);
+                        curObj.source = "";
+                        curTimeInSeconds = minsec2sec(curObj.starttime);
+                        start=true;
+                    } else {
+                        let t = lines[i].substr(1,5);
+                        if (i==lines.length-1 || (minsec2sec(t)-curTimeInSeconds>300 && lines[i+1].length>1 ) ){
+                            curObj.endtime=lines[i].substr(1,5);
+                            res.push(JSON.parse(JSON.stringify(curObj)));
+                            curObj={};
+                            curObj.startvol=vol;
+                            curObj.starttime=lines[i].substr(1,5);
+                            curObj.source = "";
+                            curTimeInSeconds = minsec2sec(curObj.starttime);
+                            start=true;
+                        }
+                    }
+                } else {
+                    curObj.source += lines[i];
+                }
+            }
+            return res;
+        }
+        function minsec2sec(minsec) {
+            var tokens = minsec.split(":")
+            if (tokens.length == 1)
+                return parseInt(minsec);
+            else if (tokens.length == 2) {
+                return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+            }
+            else return 0;
+        }
+
+    </script>
+</body>
+</html>
