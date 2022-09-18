@@ -113,17 +113,22 @@
             audio.pause();
             index = ind;
             var vol = spans[index].getAttribute("vol");
-            audio.src = leading + vol.padStart(4,'0') + ".mp3"
+            let src = leading + vol.padStart(4,'0') + ".mp3";
             audio.currentTime = parseInt(spans[index].getAttribute("starttime"));
             endtime = parseInt(spans[index].getAttribute("endtime"))
-            audio.load();
-            audio.play();
+            if (src!=audio.src){
+                audio.src=src;
+                audio.load();
+                audio.play();
+            } else {
+                audio.play();
+            }
         }
 
         function updated(){
             currentTime = audio.currentTime;
 
-            if (audio.currentTime > endtime){
+            if (audio.currentTime > endtime || audio.ended){
                 audio.pause();
                 if (index < data.length - 1){
                     setYinDang(index + 1);
