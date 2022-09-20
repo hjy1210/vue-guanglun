@@ -117,6 +117,7 @@
           src = src + `&et1=${minsec2sec(item.endtime)}`
         }
         span.setAttribute("src", src);
+        span.setAttribute("title",`${item.startvol.toUpperCase()} ${item.starttime}-${item.endtime}`);
         span.addEventListener("click", (ev) => setYinDang(ev.target));
         curparagraph.appendChild(span)
       })
